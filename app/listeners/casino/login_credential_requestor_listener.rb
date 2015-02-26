@@ -1,8 +1,9 @@
 require_relative 'listener'
 
 class CASino::LoginCredentialRequestorListener < CASino::Listener
-  def user_not_logged_in(login_ticket)
+  def user_not_logged_in(login_ticket, external_authenticators)
     assign(:login_ticket, login_ticket)
+    assign(:external_authenticators, external_authenticators)
     @controller.cookies.delete :tgt
   end
 

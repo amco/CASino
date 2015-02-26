@@ -20,7 +20,7 @@ describe CASino::LoginCredentialRequestorProcessor do
 
     context 'when logged out' do
       it 'calls the #user_not_logged_in method on the listener' do
-        listener.should_receive(:user_not_logged_in).with(kind_of(CASino::LoginTicket))
+        listener.should_receive(:user_not_logged_in).with(kind_of(CASino::LoginTicket), kind_of(Hash))
         processor.process
       end
 
@@ -39,7 +39,7 @@ describe CASino::LoginCredentialRequestorProcessor do
           let(:params) { { gateway: 'true' } }
 
           it 'calls the #user_not_logged_in method on the listener' do
-            listener.should_receive(:user_not_logged_in).with(kind_of(CASino::LoginTicket))
+            listener.should_receive(:user_not_logged_in).with(kind_of(CASino::LoginTicket), kind_of(Hash))
             processor.process
           end
         end
@@ -59,7 +59,7 @@ describe CASino::LoginCredentialRequestorProcessor do
         let(:ticket_granting_ticket) { FactoryGirl.create :ticket_granting_ticket, :awaiting_two_factor_authentication }
 
         it 'calls the #user_not_logged_in method on the listener' do
-          listener.should_receive(:user_not_logged_in).with(kind_of(CASino::LoginTicket))
+          listener.should_receive(:user_not_logged_in).with(kind_of(CASino::LoginTicket), kind_of(Hash))
           processor.process(nil, cookies, user_agent)
         end
       end
@@ -71,7 +71,7 @@ describe CASino::LoginCredentialRequestorProcessor do
         end
 
         it 'calls the #user_not_logged_in method on the listener' do
-          listener.should_receive(:user_not_logged_in).with(kind_of(CASino::LoginTicket))
+          listener.should_receive(:user_not_logged_in).with(kind_of(CASino::LoginTicket), kind_of(Hash))
           processor.process(nil, cookies, user_agent)
         end
       end
@@ -93,7 +93,7 @@ describe CASino::LoginCredentialRequestorProcessor do
 
         context 'with renew parameter' do
           it 'calls the #user_not_logged_in method on the listener' do
-            listener.should_receive(:user_not_logged_in).with(kind_of(CASino::LoginTicket))
+            listener.should_receive(:user_not_logged_in).with(kind_of(CASino::LoginTicket), kind_of(Hash))
             processor.process(params.merge({ renew: 'true' }), cookies)
           end
         end
@@ -135,7 +135,7 @@ describe CASino::LoginCredentialRequestorProcessor do
           let(:user_agent) { 'FooBar 1.0' }
 
           it 'calls the #user_not_logged_in method on the listener' do
-            listener.should_receive(:user_not_logged_in).with(kind_of(CASino::LoginTicket))
+            listener.should_receive(:user_not_logged_in).with(kind_of(CASino::LoginTicket), kind_of(Hash))
             processor.process(nil, cookies, user_agent)
           end
         end

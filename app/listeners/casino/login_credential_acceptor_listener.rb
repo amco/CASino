@@ -15,14 +15,14 @@ class CASino::LoginCredentialAcceptorListener < CASino::Listener
     @controller.render 'validate_otp'
   end
 
-  def invalid_login_credentials(login_ticket)
+  def invalid_login_credentials(login_ticket, external_authenticators)
     @controller.flash.now[:error] = I18n.t('login_credential_acceptor.invalid_login_credentials')
-    rerender_login_page(login_ticket)
+    rerender_login_page(login_ticket, external_authenticators)
   end
 
-  def invalid_login_ticket(login_ticket)
+  def invalid_login_ticket(login_ticket, external_authenticators)
     @controller.flash.now[:error] = I18n.t('login_credential_acceptor.invalid_login_ticket')
-    rerender_login_page(login_ticket)
+    rerender_login_page(login_ticket, external_authenticators)
   end
 
   def service_not_allowed(service)
@@ -31,8 +31,9 @@ class CASino::LoginCredentialAcceptorListener < CASino::Listener
   end
 
   private
-  def rerender_login_page(login_ticket)
+  def rerender_login_page(login_ticket, external_authenticators)
     assign(:login_ticket, login_ticket)
+    assign(:external_authenticators, external_authenticators)
     @controller.render 'new', status: 403
   end
 end

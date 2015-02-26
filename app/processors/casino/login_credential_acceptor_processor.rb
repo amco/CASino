@@ -13,30 +13,43 @@ class CASino::LoginCredentialAcceptorProcessor < CASino::Processor
   #   The second argument (String) is the ticket-granting ticket. It should be stored in a cookie named "tgt".
   #   The third argument (Time, optional, default = nil) is for "Remember Me" functionality.
   #   This is the cookies expiration date. If it is `nil`, the cookie should be a session cookie.
-  # * `#invalid_login_ticket` and `#invalid_login_credentials`: The first argument is a LoginTicket.
+  # * `#invalid_login_ticket` and `#invalid_login_credentials`: The first argument is a LoginTicket and the second argument is the collection of external authenticators
   #   See {CASino::LoginCredentialRequestorProcessor} for details.
   # * `#service_not_allowed`: The user tried to access a service that this CAS server is not allowed to serve.
   # * `#two_factor_authentication_pending`: The user should be asked to enter his OTP. The first argument (String) is the ticket-granting ticket. The ticket-granting ticket is not active yet. Use SecondFactorAuthenticatonAcceptor to activate it.
   #
   # @param [Hash] params parameters supplied by user
+  # @param [Hash] cookies cookies supplied by user
   # @param [String] user_agent user-agent delivered by the client
-  def process(params = nil, user_agent = nil)
+  def process(params = nil, cookies = nil, user_agent = nil)
     @params = params || {}
+    @cookies = cookies || {}
     @user_agent = user_agent
     if login_ticket_valid?(@params[:lt])
       authenticate_user
     else
-      @listener.invalid_login_ticket(acquire_login_ticket)
+      external_authenticators = authenticators(:external_authenticators)
+      @listener.invalid_login_ticket(acquire_login_ticket, external_authenticators)
+    end
+  end
+
+  protected
+  def validate_credentials
+    if @params[:external]
+      validate_external_credentials(@params, @cookies)
+    else
+      validate_login_credentials(@params[:username], @params[:password])
     end
   end
 
   private
   def authenticate_user
-    authentication_result = validate_login_credentials(@params[:username], @params[:password])
+    authentication_result = validate_credentials
     if !authentication_result.nil?
       user_logged_in(authentication_result)
     else
-      @listener.invalid_login_credentials(acquire_login_ticket)
+      external_authenticators = authenticators(:external_authenticators)
+      @listener.invalid_login_credentials(acquire_login_ticket, external_authenticators)
     end
   end
 

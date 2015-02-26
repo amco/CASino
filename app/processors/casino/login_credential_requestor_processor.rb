@@ -4,6 +4,7 @@ class CASino::LoginCredentialRequestorProcessor < CASino::Processor
   include CASino::ProcessorConcern::LoginTickets
   include CASino::ProcessorConcern::ServiceTickets
   include CASino::ProcessorConcern::TicketGrantingTickets
+  include CASino::ProcessorConcern::Authentication
 
   # Use this method to process the request.
   #
@@ -51,7 +52,8 @@ class CASino::LoginCredentialRequestorProcessor < CASino::Processor
       @listener.user_logged_in(@service_url)
     else
       login_ticket = acquire_login_ticket
-      @listener.user_not_logged_in(login_ticket)
+      external_authenticators = authenticators(:external_authenticators)
+      @listener.user_not_logged_in(login_ticket, external_authenticators)
     end
   end
 

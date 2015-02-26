@@ -4,17 +4,23 @@ describe CASino::LoginCredentialRequestorListener do
   include CASino::Engine.routes.url_helpers
   let(:controller) { Struct.new(:cookies).new(cookies: {}) }
   let(:listener) { described_class.new(controller) }
+  let(:external_authenticators) { { :static => {} } }
 
   describe '#user_not_logged_in' do
     let(:login_ticket) { Object.new }
     it 'assigns the login ticket' do
-      listener.user_not_logged_in(login_ticket)
+      listener.user_not_logged_in(login_ticket, external_authenticators)
       controller.instance_variable_get(:@login_ticket).should == login_ticket
+    end
+
+    it 'receives external authenticators' do
+      listener.user_not_logged_in(login_ticket, external_authenticators)
+      controller.instance_variable_get(:@external_authenticators).should == external_authenticators
     end
 
     it 'deletes an existing ticket-granting ticket cookie' do
       controller.cookies = { tgt: 'TGT-12345' }
-      listener.user_not_logged_in(login_ticket)
+      listener.user_not_logged_in(login_ticket, external_authenticators)
       controller.cookies[:tgt].should be_nil
     end
   end

@@ -18,7 +18,14 @@ defaults: &defaults
           testuser:
             password: "foobar123"
             name: "Test User"
-
+  external_authenticators:
+    external_static:
+      class: "CASino::StaticExternalAuthenticator"
+      options:
+        users:
+          foobar123:
+            username: "foobar"
+            name: "Test User"
 development:
   <<: *defaults
 

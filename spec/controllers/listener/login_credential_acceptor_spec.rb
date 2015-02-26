@@ -47,6 +47,7 @@ describe CASino::LoginCredentialAcceptorListener do
     context "##{method}" do
       let(:login_ticket) { Object.new }
       let(:flash) { ActionDispatch::Flash::FlashHash.new }
+      let(:external_authenticators) { { :static => {} } }
 
       before(:each) do
         controller.stub(:render)
@@ -55,16 +56,21 @@ describe CASino::LoginCredentialAcceptorListener do
 
       it 'tells the controller to render the new template' do
         controller.should_receive(:render).with('new', status: 403)
-        listener.send(method, login_ticket)
+        listener.send(method, login_ticket, external_authenticators)
       end
 
       it 'assigns a new login ticket' do
-        listener.send(method, login_ticket)
+        listener.send(method, login_ticket, external_authenticators)
         controller.instance_variable_get(:@login_ticket).should == login_ticket
       end
 
+      it 'receives external authenticators' do
+        listener.send(method, login_ticket, external_authenticators)
+        controller.instance_variable_get(:@external_authenticators).should == external_authenticators
+      end
+
       it 'should add an error message' do
-        listener.send(method, login_ticket)
+        listener.send(method, login_ticket, external_authenticators)
         flash[:error].should == I18n.t("login_credential_acceptor.#{method}")
       end
     end

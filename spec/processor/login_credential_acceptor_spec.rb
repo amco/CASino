@@ -7,7 +7,7 @@ describe CASino::LoginCredentialAcceptorProcessor do
 
     context 'without a valid login ticket' do
       it 'calls the #invalid_login_ticket method on the listener' do
-        listener.should_receive(:invalid_login_ticket).with(kind_of(CASino::LoginTicket))
+        listener.should_receive(:invalid_login_ticket).with(kind_of(CASino::LoginTicket), kind_of(Hash))
         processor.process
       end
     end
@@ -16,8 +16,32 @@ describe CASino::LoginCredentialAcceptorProcessor do
       let(:expired_login_ticket) { FactoryGirl.create :login_ticket, :expired }
 
       it 'calls the #invalid_login_ticket method on the listener' do
-        listener.should_receive(:invalid_login_ticket).with(kind_of(CASino::LoginTicket))
+        listener.should_receive(:invalid_login_ticket).with(kind_of(CASino::LoginTicket), kind_of(Hash))
         processor.process(lt: expired_login_ticket.ticket)
+      end
+    end
+
+    context 'with an external param' do
+      let(:login_ticket) { FactoryGirl.create :login_ticket }
+      let(:params) { { lt: login_ticket.ticket, external: 'static' } }
+      let(:cookies) { { token: 'foo123' } }
+
+      it 'calls the #validate_external_credentials method on the processor' do
+        listener.should_receive(:invalid_login_credentials).with(kind_of(CASino::LoginTicket), kind_of(Hash))
+        processor.should_receive(:validate_external_credentials).with(kind_of(Hash), kind_of(Hash))
+        processor.process(params, cookies)
+      end
+    end
+
+    context 'without an external param' do
+      let(:login_ticket) { FactoryGirl.create :login_ticket }
+      let(:params) { { lt: login_ticket.ticket, username: 'testuser', password: 'foo123' } }
+      let(:cookies) { {} }
+
+      it 'calls the #validate_login_credentials method on the processor' do
+        listener.should_receive(:invalid_login_credentials).with(kind_of(CASino::LoginTicket), kind_of(Hash))
+        processor.should_receive(:validate_login_credentials).with(kind_of(String), kind_of(String))
+        processor.process(params, cookies)
       end
     end
 
@@ -26,7 +50,7 @@ describe CASino::LoginCredentialAcceptorProcessor do
 
       context 'with invalid credentials' do
         it 'calls the #invalid_login_credentials method on the listener' do
-          listener.should_receive(:invalid_login_credentials).with(kind_of(CASino::LoginTicket))
+          listener.should_receive(:invalid_login_credentials).with(kind_of(CASino::LoginTicket), kind_of(Hash))
           processor.process(lt: login_ticket.ticket)
         end
       end
@@ -86,7 +110,7 @@ describe CASino::LoginCredentialAcceptorProcessor do
           end
 
           it 'calls the #invalid_login_credentials method on the listener' do
-            listener.should_receive(:invalid_login_credentials).with(kind_of(CASino::LoginTicket))
+            listener.should_receive(:invalid_login_credentials).with(kind_of(CASino::LoginTicket), kind_of(Hash))
             processor.process(login_data)
           end
         end
