@@ -21,10 +21,11 @@ class CASino::LoginCredentialAcceptorProcessor < CASino::Processor
   # @param [Hash] params parameters supplied by user
   # @param [Hash] cookies cookies supplied by user
   # @param [String] user_agent user-agent delivered by the client
-  def process(params = nil, cookies = nil, user_agent = nil)
+  def process(params = nil, cookies = nil, user_agent = nil, request=nil)
     @params = params || {}
     @cookies = cookies || {}
     @user_agent = user_agent
+    @request = request
     if login_ticket_valid?(@params[:lt])
       authenticate_user
     else
@@ -36,7 +37,7 @@ class CASino::LoginCredentialAcceptorProcessor < CASino::Processor
   protected
   def validate_credentials
     if @params[:external]
-      validate_external_credentials(@params, @cookies)
+      validate_external_credentials(@params, @cookies, request)
     else
       validate_login_credentials(@params[:username], @params[:password])
     end

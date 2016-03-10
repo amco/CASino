@@ -10,10 +10,10 @@ module CASino
         end
       end
 
-      def validate_external_credentials(params, cookies)
+      def validate_external_credentials(params, cookies, request=nil)
         validate :external_authenticators do |authenticator_name, authenticator|
           if authenticator_name == params[:external]
-            authenticator.validate(params, cookies)
+            authenticator.validate(params, cookies, request)
           end
         end
       end

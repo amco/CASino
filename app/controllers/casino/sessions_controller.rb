@@ -11,7 +11,7 @@ class CASino::SessionsController < CASino::ApplicationController
   end
 
   def create
-    processor(:LoginCredentialAcceptor).process(params, cookies, request.user_agent)
+    processor(:LoginCredentialAcceptor).process(params, cookies, request.user_agent, request)
   end
 
   def destroy
