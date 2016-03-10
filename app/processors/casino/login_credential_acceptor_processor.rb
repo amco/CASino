@@ -37,7 +37,7 @@ class CASino::LoginCredentialAcceptorProcessor < CASino::Processor
   protected
   def validate_credentials
     if @params[:external]
-      validate_external_credentials(@params, @cookies, request)
+      validate_external_credentials(@params, @cookies, @request)
     else
       validate_login_credentials(@params[:username], @params[:password])
     end
