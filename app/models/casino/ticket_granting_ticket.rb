@@ -25,7 +25,7 @@ class CASino::TicketGrantingTicket < ActiveRecord::Base
   end
 
   def delete service=nil
-    services_to_notify = service_tickets.reject { |st| st.service == service }
+    services_to_notify = service_tickets.reject { |st| st.service.starts_with?(service) }
     services_to_notify.each &:send_single_sign_out_notification
     service_tickets.all.each &:destroy
     self.destroy
