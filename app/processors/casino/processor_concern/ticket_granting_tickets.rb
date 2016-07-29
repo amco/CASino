@@ -49,10 +49,10 @@ module CASino
         return user
       end
 
-      def remove_ticket_granting_ticket(ticket_granting_ticket, user_agent = nil)
+      def remove_ticket_granting_ticket(ticket_granting_ticket, user_agent = nil, service=nil)
         tgt = find_valid_ticket_granting_ticket(ticket_granting_ticket, user_agent)
         unless tgt.nil?
-          tgt.destroy
+          tgt.delete(service)
         end
       end
 

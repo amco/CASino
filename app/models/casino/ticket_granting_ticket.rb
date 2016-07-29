@@ -24,6 +24,13 @@ class CASino::TicketGrantingTicket < ActiveRecord::Base
     tgts.destroy_all
   end
 
+  def delete service=nil
+    services_to_notify = service_tickets.reject { |st| st.service == service }
+    services_to_notify.each &:send_single_sign_out_notification
+    service_tickets.all.each &:destroy
+    self.destroy
+  end
+
   def browser_info
     unless self.user_agent.blank?
       user_agent = UserAgent.parse(self.user_agent)

@@ -13,7 +13,7 @@ class CASino::LogoutProcessor < CASino::Processor
   def process(params = nil, cookies = nil, user_agent = nil)
     params ||= {}
     cookies ||= {}
-    remove_ticket_granting_ticket(cookies[:tgt], user_agent)
+    remove_ticket_granting_ticket(cookies[:tgt], user_agent, params[:service])
     if params[:service] && CASino::ServiceRule.allowed?(params[:service])
       @listener.user_logged_out(params[:service], true)
     else

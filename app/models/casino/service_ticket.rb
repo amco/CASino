@@ -3,7 +3,6 @@ require 'addressable/uri'
 class CASino::ServiceTicket < ActiveRecord::Base
   validates :ticket, uniqueness: true
   belongs_to :ticket_granting_ticket
-  before_destroy :send_single_sign_out_notification, if: :consumed?
   has_many :proxy_granting_tickets, as: :granter, dependent: :destroy
 
   def self.cleanup_unconsumed
@@ -40,8 +39,8 @@ class CASino::ServiceTicket < ActiveRecord::Base
     (Time.now - (self.created_at || Time.now)) > lifetime
   end
 
-  private
   def send_single_sign_out_notification
+    return true unless consumed?
     notifier = SingleSignOutNotifier.new(self)
     notifier.notify
     true
