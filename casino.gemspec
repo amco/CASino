@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake', '~> 10.0'
   s.add_development_dependency 'rspec', '~> 3.0'
   s.add_development_dependency 'rspec-its', '~> 1.0'
-  s.add_development_dependency 'rspec-rails', '~> 5.2.4'
+  s.add_development_dependency 'rspec-rails', '~> 3.8.3'
   s.add_development_dependency 'sqlite3', '~> 1.3'
   s.add_development_dependency 'factory_bot', '~> 5.1.1'
   s.add_development_dependency 'webmock', '~> 1.9'
