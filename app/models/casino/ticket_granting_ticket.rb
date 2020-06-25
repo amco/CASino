@@ -1,7 +1,7 @@
 require 'user_agent'
 
 class CASino::TicketGrantingTicket < ActiveRecord::Base
-  validates :ticket, uniqueness: true
+  validates :ticket, uniqueness: true, case_sensitive: true
 
   belongs_to :user
   has_many :service_tickets, dependent: :destroy
