@@ -1,5 +1,5 @@
 class CASino::LoginTicket < ActiveRecord::Base
-  validates :ticket, uniqueness: true, case_sensitive: true
+  validates :ticket, uniqueness: true
   before_validation :ensure_ticket_present
   class_attribute :ticket_prefix
   self.ticket_prefix = 'LT'.freeze
